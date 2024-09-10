@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja de Livros</title>
+</head>
+<body>
+    <h1>Livros Disponíveis</h1>
+    <ul id="books-list"></ul>
+
+    <h2>Login</h2>
+    <form id="login-form">
+        <input type="text" id="username" placeholder="Usuário" required>
+        <input type="password" id="password" placeholder="Senha" required>
+        <button type="submit">Login</button>
+    </form>
+
+    <h2>Adicionar Novo Livro</h2>
+    <form id="add-book-form" style="display: none;">
+        <input type="text" id="title" placeholder="Título" required>
+        <input type="text" id="author" placeholder="Autor" required>
+        <input type="number" id="price" placeholder="Preço" step="0.01" required>
+        <button type="submit">Adicionar</button>
+    </form>
+
+    <button id="logout-btn" style="display: none;">Logout</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const booksList = document.getElementById('books-list');
+            const loginForm = document.getElementById('login-form');
+            const addBookForm = document.getElementById('add-book-form');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            let accessToken = '';
+
+            const fetchBooks = () => {
+                axios.get('/api/books')
+                    .then(response => {
+                        booksList.innerHTML = '';
+                        response.data.forEach(book => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `${book.title} - ${book.author} - R$${book.price.toFixed(2)}`;
+                            booksList.appendChild(listItem);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar os livros:', error);
+                        alert('Erro ao buscar os livros. Por favor, tente novamente mais tarde.');
+                    });
+            };
+
+            loginForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                axios.post('/api/login', { username, password })
+                    .then(response => {
+                        accessToken = response.data.accessToken;
+                        loginForm.style.display = 'none';
+                        addBookForm.style.display = 'block';
+                        logoutBtn.style.display = 'block';
+                        fetchBooks();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao fazer login:', error);
+                        if (error.response && error.response.status === 404) {
+                            alert('Usuário não cadastrado. Por favor, verifique suas credenciais e tente novamente.');
+                        } else if (error.response && error.response.status === 401) {
+                            alert('Senha errada. Por favor, verifique suas credenciais e tente novamente.');
+                        } else {
+                            alert('Erro ao fazer login. Por favor, tente novamente mais tarde.');
+                        }
+                    });
+            });
+
+            addBookForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const title = document.getElementById('title').value;
+                const author = document.getElementById('author').value;
+                const price = parseFloat(document.getElementById('price').value);
+
+                axios.post('/api/books', { title, author, price }, {
+                    headers: {
+                        'Authorization': accessToken
+                    }
+                })
+                    .then(response => {
+                        addBookForm.reset();
+                        fetchBooks();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao adicionar o livro:', error);
+                        alert('Erro ao adicionar o livro. Por favor, tente novamente mais tarde.');
+                    });
+            });
+
+            logoutBtn.addEventListener('click', () => {
+                accessToken = '';
+                loginForm.style.display = 'block';
+                addBookForm.style.display = 'none';
+                logoutBtn.style.display = 'none';
+                fetchBooks();
+            });
+
+            fetchBooks();
+        });
+    </script>
+</body>
+</html>
