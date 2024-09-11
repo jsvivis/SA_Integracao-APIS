@@ -7,8 +7,8 @@
 - Esquema de Validação de Jogos: Usa Joi para validar os dados dos jogos.
 - Middleware de Autenticação: Verifica se o token JWT está presente e é válido.
 - Endpoints:
-    - /api/books (GET): Retorna a lista de jogos.
-    - /api/books (POST): Adiciona um novo jogo (protegido por autenticação).
+    - /api/games (GET): Retorna a lista de jogos.
+    - /api/games (POST): Adiciona um novo jogo (protegido por autenticação).
     - /api/login (POST): Autentica o usuário e retorna um token JWT.
 
 #index.html

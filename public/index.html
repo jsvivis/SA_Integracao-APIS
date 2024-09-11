@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja de Livros</title>
+    <title>EletroGame</title>
 </head>
 <body>
-    <h1>Livros Disponíveis</h1>
-    <ul id="books-list"></ul>
+    <h1>Jogos Disponíveis</h1>
+    <ul id="games-list"></ul>
 
     <h2>Login</h2>
     <form id="login-form">
@@ -16,10 +16,10 @@
         <button type="submit">Login</button>
     </form>
 
-    <h2>Adicionar Novo Livro</h2>
-    <form id="add-book-form" style="display: none;">
+    <h2>Adicionar Novo Game</h2>
+    <form id="add-game-form" style="display: none;">
         <input type="text" id="title" placeholder="Título" required>
-        <input type="text" id="author" placeholder="Autor" required>
+        <input type="number" id="edition" placeholder="Edição" required>
         <input type="number" id="price" placeholder="Preço" step="0.01" required>
         <button type="submit">Adicionar</button>
     </form>
@@ -29,26 +29,26 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const booksList = document.getElementById('books-list');
+            const gamesList = document.getElementById('games-list');
             const loginForm = document.getElementById('login-form');
-            const addBookForm = document.getElementById('add-book-form');
+            const addGameForm = document.getElementById('add-games-form');
             const logoutBtn = document.getElementById('logout-btn');
 
             let accessToken = '';
 
-            const fetchBooks = () => {
-                axios.get('/api/books')
+            const fetchGames = () => {
+                axios.get('/api/games')
                     .then(response => {
-                        booksList.innerHTML = '';
-                        response.data.forEach(book => {
+                        gamesList.innerHTML = '';
+                        response.data.forEach(game => {
                             const listItem = document.createElement('li');
-                            listItem.textContent = `${book.title} - ${book.author} - R$${book.price.toFixed(2)}`;
-                            booksList.appendChild(listItem);
+                            listItem.textContent = `${game.title} - ${game.edition} - R$${game.price.toFixed(2)}`;
+                            gamesList.appendChild(listItem);
                         });
                     })
                     .catch(error => {
-                        console.error('Erro ao buscar os livros:', error);
-                        alert('Erro ao buscar os livros. Por favor, tente novamente mais tarde.');
+                        console.error('Erro ao buscar os jogos:', error);
+                        alert('Erro ao buscar os jogos. Por favor, tente novamente mais tarde.');
                     });
             };
 
@@ -61,9 +61,9 @@
                     .then(response => {
                         accessToken = response.data.accessToken;
                         loginForm.style.display = 'none';
-                        addBookForm.style.display = 'block';
+                        addGameForm.style.display = 'block';
                         logoutBtn.style.display = 'block';
-                        fetchBooks();
+                        fetchGames();
                     })
                     .catch(error => {
                         console.error('Erro ao fazer login:', error);
@@ -77,36 +77,36 @@
                     });
             });
 
-            addBookForm.addEventListener('submit', (event) => {
+            addGameForm.addEventListener('submit', (event) => {
                 event.preventDefault();
                 const title = document.getElementById('title').value;
-                const author = document.getElementById('author').value;
+                const edition = document.getElementById('edition').value;
                 const price = parseFloat(document.getElementById('price').value);
 
-                axios.post('/api/books', { title, author, price }, {
+                axios.post('/api/games', { title, edition, price }, {
                     headers: {
                         'Authorization': accessToken
                     }
                 })
                     .then(response => {
-                        addBookForm.reset();
-                        fetchBooks();
+                        addGameForm.reset();
+                        fetchGames();
                     })
                     .catch(error => {
-                        console.error('Erro ao adicionar o livro:', error);
-                        alert('Erro ao adicionar o livro. Por favor, tente novamente mais tarde.');
+                        console.error('Erro ao adicionar o jogo:', error);
+                        alert('Erro ao adicionar o jogo. Por favor, tente novamente mais tarde.');
                     });
             });
 
             logoutBtn.addEventListener('click', () => {
                 accessToken = '';
                 loginForm.style.display = 'block';
-                addBookForm.style.display = 'none';
+                addGameForm.style.display = 'none';
                 logoutBtn.style.display = 'none';
-                fetchBooks();
+                fetchGames();
             });
 
-            fetchBooks();
+            fetchGames();
         });
     </script>
 </body>

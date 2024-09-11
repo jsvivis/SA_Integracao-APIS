@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import jwt from 'jsonwebtoken';
 import { fileURLToPath } from 'url';
-import { createBook, getAllBooks, getBookById, updateBook, deleteBook } from './controllers/booksController.js'; // Atualizar o caminho conforme a sua estrutura
+import { createGame, getAllGames, getGameById, updateGame, deleteGame } from './controllers/gamesController.js'; // Atualizar o caminho conforme a sua estrutura
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,12 +26,12 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// Rotas de livros
-app.get('/api/books', getAllBooks);
-app.post('/api/books', authenticateToken, createBook);
-app.get('/api/books/:id', getBookById);
-app.put('/api/books/:id', authenticateToken, updateBook);
-app.delete('/api/books/:id', authenticateToken, deleteBook);
+// Rotas de jogos
+app.get('/api/games', getAllGames);
+app.post('/api/games', authenticateToken, createGame);
+app.get('/api/games/:id', getGameById);
+app.put('/api/games/:id', authenticateToken, updateGame);
+app.delete('/api/games/:id', authenticateToken, deleteGame);
 
 // Login
 app.post('/api/login', (req, res) => {
